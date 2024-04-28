@@ -33,7 +33,7 @@ jobs:
         id: netlify_deploy
         run: |
           prod_flag=""
-          if [ "$BRANCH_NAME" = "master" ]; then prod_flag="--prod"; fi
+          if [ "$BRANCH_NAME" = "main" ]; then prod_flag="--prod"; fi
           netlify deploy \
             --dir dist \
             --site ${{ secrets.NETLIFY_SITE_ID }} \
@@ -44,7 +44,6 @@ jobs:
 
       - name: Generate URL Preview
         id: url_preview
-        if: ${{ env.BRANCH_NAME != 'main' }}
         run: |
           NETLIFY_PREVIEW_URL=$(jq -r '.deploy_url' deploy_output.json)
           echo "NETLIFY_PREVIEW_URL=$NETLIFY_PREVIEW_URL" >> "$GITHUB_OUTPUT"
@@ -54,7 +53,6 @@ jobs:
 
       - name: Comment URL Preview on PR
         uses: actions/github-script@v7
-        if: ${{ env.BRANCH_NAME != 'main' }}
         env:
           NETLIFY_PREVIEW_URL: ${{ steps.url_preview.outputs.NETLIFY_PREVIEW_URL }}
         with:
